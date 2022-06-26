@@ -14,8 +14,7 @@ import {
 import {Menu} from "@material-ui/icons";
 import {Navigate, Route, Routes} from "react-router-dom";
 import {Login} from "../features/Login/Login";
-import {useDispatch, useSelector} from "react-redux";
-import {AppRootStateType} from "./store";
+import {useAppDispatch, useCustomSelector} from "./store";
 import {inInitializedApp, RequestStatusType} from "./app-reducer";
 import {logoutTc} from "./auth-reducer";
 import {ErrorSnackbar} from "../Components/ErrorSnackbar/ErrorSnackbar";
@@ -23,19 +22,17 @@ import {ErrorSnackbar} from "../Components/ErrorSnackbar/ErrorSnackbar";
 
 function App() {
 
-    const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
-    const isInInitialized = useSelector<AppRootStateType, boolean>(state => state.app.inInitialized)
-    const isLoggedIn = useSelector<AppRootStateType>(state => state.auth.isLoggedIn)
-    const dispatch = useDispatch()
+    const status = useCustomSelector<RequestStatusType>(state => state.app.status)
+    const isInInitialized = useCustomSelector< boolean>(state => state.app.inInitialized)
+    const isLoggedIn = useCustomSelector(state => state.auth.isLoggedIn)
+    const dispatch = useAppDispatch()
 
 
     useEffect(() => {
-        // @ts-ignore
         dispatch(inInitializedApp())
     }, [])
 
     const onClickHandlerLogout = () => {
-        // @ts-ignore
         dispatch(logoutTc())
     }
 

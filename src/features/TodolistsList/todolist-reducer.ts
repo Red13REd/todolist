@@ -1,11 +1,11 @@
 import {todolistApi, TodolistType} from "../../api/todolist-api";
-import {Dispatch} from "redux"
 import {ActionsAppType, setAppStatus} from "../../app/app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
+import {AppThunk} from "../../app/store";
 
 const initialState: TodolistDomainType[] = []
 
-export const todolistReducer = (state: TodolistDomainType[] = initialState, action: ActionsType): TodolistDomainType[] => {
+export const todolistReducer = (state: TodolistDomainType[] = initialState, action: TodoActionsType): TodolistDomainType[] => {
     switch (action.type) {
         case "SET-TODO":
             return action.todo.map(m => ({...m, filter: "all", entityStatus: "idle"}))
@@ -67,7 +67,7 @@ export const UpdateTodoEntityStatusAC = (todoId: string, status: RequestStatusTy
 
 
 //thunks
-export const fetchTodo = () => (dispatch: ThunkDispatch) => {
+export const fetchTodo = ():AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     todolistApi.getTodo()
         .then(res => {
@@ -77,7 +77,7 @@ export const fetchTodo = () => (dispatch: ThunkDispatch) => {
         )
 }
 
-export const removeTodoTC = (todoId: string) => (dispatch: ThunkDispatch) => {
+export const removeTodoTC = (todoId: string):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     dispatch(UpdateTodoEntityStatusAC(todoId, "loading"))
     todolistApi.deleteTodo(todoId)
@@ -87,7 +87,7 @@ export const removeTodoTC = (todoId: string) => (dispatch: ThunkDispatch) => {
         })
 }
 
-export const addTodoTC = (title: string) => (dispatch: ThunkDispatch) => {
+export const addTodoTC = (title: string):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     todolistApi.createTodo(title)
         .then(res => {
@@ -96,7 +96,7 @@ export const addTodoTC = (title: string) => (dispatch: ThunkDispatch) => {
         })
 }
 
-export const changeTodoTitleTC = (todoId: string, title: string) => (dispatch: ThunkDispatch) => {
+export const changeTodoTitleTC = (todoId: string, title: string):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     todolistApi.updateTodo(todoId, title)
         .then(res => {
@@ -117,7 +117,7 @@ export type createTodoType = ReturnType<typeof CreateTodo>
 export type RemoveTodoType = ReturnType<typeof RemoveTodo>
 export type SetTodoType = ReturnType<typeof SetTodo>
 
-type ActionsType =
+export type TodoActionsType =
     | SetTodoType
     | RemoveTodoType
     | createTodoType
@@ -134,5 +134,3 @@ export type TodolistDomainType = TodolistType & {
 
 export type FilterValuesType = "all" | "active" | "completed";
 export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed";
-
-type ThunkDispatch = Dispatch<ActionsType>

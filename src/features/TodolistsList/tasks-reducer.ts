@@ -5,14 +5,13 @@ import {
     RequestStatusType,
     SetTodoType,
 } from "./todolist-reducer";
-import {Dispatch} from 'redux'
-import {AppRootStateType} from "../../app/store";
+import {AppStateRootType, AppThunk} from "../../app/store";
 import {setAppStatus} from "../../app/app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
 
-const initalState: TaskStateType = {}
+const initialState: TaskStateType = {}
 //,
-export const tasksReducer = (state: TaskStateType = initalState, action: ActionsType): TaskStateType => {
+export const tasksReducer = (state: TaskStateType = initialState, action: TasksActionsType): TaskStateType => {
     switch (action.type) {
         case "REMOVE-TASK":
             return {...state, [action.todoId]: state[action.todoId].filter(f => f.id !== action.taskId)}
@@ -99,7 +98,7 @@ export const UpdateTaskEntityStatusAC = (todoId: string, taskId: string, status:
 
 
 //thunks
-export const fetchTask = (todoId: string) => (dispatch: DispatchThunks) => {
+export const fetchTask = (todoId: string):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     todolistApi.getTask(todoId)
         .then(res => {
@@ -108,7 +107,7 @@ export const fetchTask = (todoId: string) => (dispatch: DispatchThunks) => {
         })
 }
 
-export const removeTaskTC = (todoId: string, taskId: string) => (dispatch: DispatchThunks) => {
+export const removeTaskTC = (todoId: string, taskId: string):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     dispatch(UpdateTaskEntityStatusAC(todoId, taskId, "loading"))
     todolistApi.deleteTask(todoId, taskId)
@@ -118,7 +117,7 @@ export const removeTaskTC = (todoId: string, taskId: string) => (dispatch: Dispa
         })
 }
 
-export const addTaskTC = (todoId: string, title: string) => (dispatch: DispatchThunks) => {
+export const addTaskTC = (todoId: string, title: string):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     todolistApi.createTask(todoId, title)
         .then(res => {
@@ -134,8 +133,8 @@ export const addTaskTC = (todoId: string, title: string) => (dispatch: DispatchT
         })
 }
 
-export const updateTaskTC = (todoId: string, taskId: string, model: UpdateDomainTaskModelType) =>
-    (dispatch: DispatchThunks, getState: () => AppRootStateType) => {
+export const updateTaskTC = (todoId: string, taskId: string, model: UpdateDomainTaskModelType):AppThunk =>
+    (dispatch, getState: () => AppStateRootType) => {
         const state = getState()
         const task = state.task[todoId].find(f => f.id === taskId)
 
@@ -170,7 +169,7 @@ export const updateTaskTC = (todoId: string, taskId: string, model: UpdateDomain
 
 
 //type
-type ActionsType =
+export type TasksActionsType =
     | ReturnType<typeof deletedTask>
     | ReturnType<typeof addTask>
     | ReturnType<typeof updateTask>
@@ -195,5 +194,3 @@ export type UpdateDomainTaskModelType = {
     startDate?: string
     deadline?: string
 }
-
-type DispatchThunks = Dispatch<ActionsType>

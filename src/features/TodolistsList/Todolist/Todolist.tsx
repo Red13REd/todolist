@@ -3,11 +3,11 @@ import {Task} from "./Task/Task";
 import {TaskStatuses} from "../../../api/todolist-api";
 import {AddItemForm} from "../../../Components/AddItremForm/AddItemForm";
 import {EditableSpan} from "../../../Components/EditableSpan/EditableSpan";
-import {useDispatch} from "react-redux";
 import {fetchTask, TaskStateDomainType} from "../tasks-reducer";
 import {FilterValuesType, TodolistDomainType} from "../todolist-reducer";
 import {Button, IconButton} from "@material-ui/core";
 import {Delete} from "@material-ui/icons";
+import {useAppDispatch} from "../../../app/store";
 
 type TodolistType = {
     tasks: TaskStateDomainType[]
@@ -35,10 +35,9 @@ export const Todolist = React.memo((props: TodolistType) => {
         removeTask,
     } = props
 
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
-        // @ts-ignore
         dispatch(fetchTask(todo.id))
     }, [])
 

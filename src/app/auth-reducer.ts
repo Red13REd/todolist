@@ -1,7 +1,7 @@
 import {authApi, LoginParamsType} from "../api/todolist-api";
-import {Dispatch} from "redux";
 import {ActionsAppType, setAppStatus} from "./app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
+import {AppThunk} from "./store";
 
 const initialState = {
     isLoggedIn: false
@@ -9,7 +9,7 @@ const initialState = {
 
 export type initialStateType = typeof initialState
 
-export const authReducer = (state: initialStateType = initialState, action: ActionsType) => {
+export const authReducer = (state: initialStateType = initialState, action: AuthActionsType) => {
     switch (action.type) {
         case "login/SET-IS-LOGGED-IN":
             return {...state, isLoggedIn: action.isLoggedIn}
@@ -26,7 +26,7 @@ export const setIsLoggedIn = (isLoggedIn: boolean) => {
 }
 
 
-export const loginTc = (data: LoginParamsType) => (dispatch: Dispatch<ActionsType>) => {
+export const loginTc = (data: LoginParamsType):AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     authApi.login(data).then(res => {
         if (res.data.resultCode === 0) {
@@ -40,7 +40,7 @@ export const loginTc = (data: LoginParamsType) => (dispatch: Dispatch<ActionsTyp
     })
 }
 
-export const logoutTc = () => (dispatch: Dispatch<ActionsType>) => {
+export const logoutTc = ():AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     authApi.logout().then(res => {
         if (res.data.resultCode === 0) {
@@ -55,4 +55,4 @@ export const logoutTc = () => (dispatch: Dispatch<ActionsType>) => {
 }
 
 
-type ActionsType = ReturnType<typeof setIsLoggedIn> | ActionsAppType
+export type AuthActionsType = ReturnType<typeof setIsLoggedIn> | ActionsAppType

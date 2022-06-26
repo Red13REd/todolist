@@ -1,7 +1,7 @@
 import {authApi} from "../api/todolist-api";
 import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
 import {setIsLoggedIn} from "./auth-reducer";
-import {Dispatch} from "redux";
+import {AppThunk} from "./store";
 
 const initialState: initialStateType = {
     status: "idle",
@@ -45,7 +45,7 @@ export const setAppInInitialized = (inInitialized: boolean) => {
 }
 
 
-export const inInitializedApp = () => (dispatch: Dispatch) => {
+export const inInitializedApp = ():AppThunk => (dispatch) => {
     dispatch(setAppStatus("loading"))
     authApi.me().then(res => {
         dispatch(setAppInInitialized(true))
