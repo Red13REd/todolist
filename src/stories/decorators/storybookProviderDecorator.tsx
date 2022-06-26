@@ -1,6 +1,6 @@
 import {appReducer} from "../../app/app-reducer";
 import {combineReducers, createStore} from "redux";
-import {AppRootStateType} from "../../app/store";
+import {AppStateRootType} from "../../app/store";
 import {todolistReducer} from "../../features/TodolistsList/todolist-reducer";
 import {tasksReducer} from "../../features/TodolistsList/tasks-reducer";
 import {authReducer} from "../../app/auth-reducer";
@@ -96,7 +96,7 @@ const initialGlobalState = {
     },
 }
 
-export const storyBookStore = createStore(rootReducer, initialGlobalState as AppRootStateType);
+export const storyBookStore = createStore(rootReducer, initialGlobalState as AppStateRootType);
 
 export const storybookProviderDecorator = (storyFn: () => React.ReactNode) => {
     return <Provider store={storyBookStore}>{storyFn()}</Provider>
