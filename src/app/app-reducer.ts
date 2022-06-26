@@ -57,6 +57,7 @@ export const inInitializedApp = ():AppThunk => (dispatch) => {
         }
     }).catch(rej => {
         handleServerNetworkError(rej, dispatch)
+        dispatch(setAppStatus("failed"))
     })
 }
 
