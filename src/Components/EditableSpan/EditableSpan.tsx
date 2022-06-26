@@ -6,7 +6,7 @@ type EditableSpanType = {
     callBack: (title: string) => void
 }
 
-export const EditableSpan: React.FC<EditableSpanType> = ({title, callBack}) => {
+export const EditableSpan = React.memo(({title, callBack}: EditableSpanType) => {
 
     const [editMode, setEditMode] = useState<boolean>(false)
     const [newTitle, setNewTitle] = useState<string>(title)
@@ -27,6 +27,6 @@ export const EditableSpan: React.FC<EditableSpanType> = ({title, callBack}) => {
     }
 
     return editMode
-        ? <TextField value={title} onBlur={activateViewMode} autoFocus onChange={changeTitle}/>
+        ? <TextField value={newTitle} onBlur={activateViewMode} autoFocus onChange={changeTitle}/>
         : <span onDoubleClick={activateEditMode}>{title}</span>
-};
+})

@@ -1,16 +1,16 @@
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 import {Task} from "./Task/Task";
-import {TaskStatuses, TaskType} from "../../../api/todolist-api";
+import {TaskStatuses} from "../../../api/todolist-api";
 import {AddItemForm} from "../../../Components/AddItremForm/AddItemForm";
 import {EditableSpan} from "../../../Components/EditableSpan/EditableSpan";
 import {useDispatch} from "react-redux";
-import {fetchTask} from "../task-reducer";
+import {fetchTask, TaskStateDomainType} from "../tasks-reducer";
 import {FilterValuesType, TodolistDomainType} from "../todolist-reducer";
 import {Button, IconButton} from "@material-ui/core";
 import {Delete} from "@material-ui/icons";
 
 type TodolistType = {
-    tasks: TaskType[]
+    tasks: TaskStateDomainType[]
     todo: TodolistDomainType
     changeTodoTitle: (todoId: string, title: string) => void
     removeTodo: (todoId: string) => void
@@ -21,7 +21,7 @@ type TodolistType = {
     removeTask: (todoId: string, taskId: string) => void
 }
 
-export const Todolist: React.FC<TodolistType> = (props) => {
+export const Todolist = React.memo((props: TodolistType) => {
 
     const {
         tasks,
@@ -43,37 +43,37 @@ export const Todolist: React.FC<TodolistType> = (props) => {
     }, [])
 
 
-    const addTaskTodo = (title: string) => {
+    const addTaskTodo = useCallback((title: string) => {
         addTask(todo.id, title)
-    }
+    }, [addTask, todo.id])
 
-    const removeTodolist = () => {
+    const removeTodolist = useCallback(() => {
         removeTodo(todo.id)
-    }
+    }, [removeTodo, todo.id])
 
-    const changeTodolistTitle = (title: string) => {
+    const changeTodolistTitle = useCallback((title: string) => {
         changeTodoTitle(todo.id, title)
-    }
+    }, [changeTodoTitle, todo.id])
 
-    const onAllClickHandler = () => {
+    const onAllClickHandler = useCallback(() => {
         changeFilter(todo.id, "all")
-    }
-    const onActiveClickHandler = () => {
+    }, [changeFilter, todo.id])
+
+    const onActiveClickHandler = useCallback(() => {
         changeFilter(todo.id, "active")
-    }
-    const onCompletedClickHandler = () => {
+    }, [changeFilter, todo.id])
+
+    const onCompletedClickHandler = useCallback(() => {
         changeFilter(todo.id, "completed")
-    }
+    }, [changeFilter, todo.id])
 
 
     let tasksForTodolist = tasks
 
     if (todo.filter === "active") {
-        debugger
         tasksForTodolist = tasks.filter(f => f.status === TaskStatuses.New)
     }
     if (todo.filter === "completed") {
-        debugger
         tasksForTodolist = tasks.filter(f => f.status === TaskStatuses.Completed)
     }
 
@@ -81,10 +81,12 @@ export const Todolist: React.FC<TodolistType> = (props) => {
         <div>
             <h3>
                 <EditableSpan callBack={(title: string) => changeTodolistTitle(title)} title={todo.title}/>
-                <IconButton onClick={removeTodolist}>
+                <IconButton onClick={removeTodolist}
+                            disabled={todo.entityStatus === "loading"}>
                     <Delete/>
                 </IconButton>
-                <AddItemForm callBack={(title: string) => addTaskTodo(title)}/>
+                <AddItemForm callBack={(title: string) => addTaskTodo(title)}
+                             disabled={todo.entityStatus === "loading"}/>
             </h3>
             <div>
                 {tasksForTodolist.map(m => {
@@ -117,4 +119,4 @@ export const Todolist: React.FC<TodolistType> = (props) => {
             </div>
         </div>
     );
-};
+})

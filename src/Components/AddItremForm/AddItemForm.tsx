@@ -7,7 +7,7 @@ type addItemFormType = {
     disabled?: boolean
 }
 
-export const AddItemForm: React.FC<addItemFormType> = ({disabled = false, callBack}) => {
+export const AddItemForm = React.memo(({disabled = false, callBack}: addItemFormType) => {
     const [title, setTitle] = useState<string>("")
     const [error, setError] = useState<string | null>(null)
 
@@ -28,7 +28,7 @@ export const AddItemForm: React.FC<addItemFormType> = ({disabled = false, callBa
         if (error !== null) {
             setError(null)
         }
-        if (e.charCode === 13) {
+        if (e.key === "Enter") {
             addItemHandler()
         }
     }
@@ -49,4 +49,4 @@ export const AddItemForm: React.FC<addItemFormType> = ({disabled = false, callBa
             </IconButton>
         </div>
     );
-};
+})

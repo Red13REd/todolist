@@ -1,5 +1,7 @@
 import {todolistApi, TodolistType} from "../../api/todolist-api";
 import {Dispatch} from "redux"
+import {ActionsAppType, setAppStatus} from "../../app/app-reducer";
+import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
 
 const initialState: TodolistDomainType[] = []
 
@@ -16,7 +18,7 @@ export const todolistReducer = (state: TodolistDomainType[] = initialState, acti
         case "CHANGE-TODOLIST-FILTER":
             return state.map(m => m.id === action.todoId ? {...m, filter: action.filter} : m)
         case "CHANGE-TODOLIST-STATUS":
-            return state.map(m => m.id === action.todoId ? {...m, status: action.status} : m)
+            return state.map(m => m.id === action.todoId ? {...m, entityStatus: action.status} : m)
         default:
             return state
     }
@@ -64,32 +66,49 @@ export const UpdateTodoEntityStatusAC = (todoId: string, status: RequestStatusTy
 }
 
 
-// thunks
+//thunks
 export const fetchTodo = () => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatus("loading"))
     todolistApi.getTodo()
-        .then(res =>
-            dispatch(SetTodo(res.data))
+        .then(res => {
+                dispatch(SetTodo(res.data))
+                dispatch(setAppStatus("succeeded"))
+            }
         )
 }
 
 export const removeTodoTC = (todoId: string) => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatus("loading"))
+    dispatch(UpdateTodoEntityStatusAC(todoId, "loading"))
     todolistApi.deleteTodo(todoId)
         .then(res => {
             dispatch(RemoveTodo(todoId))
+            dispatch(setAppStatus("succeeded"))
         })
 }
 
 export const addTodoTC = (title: string) => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatus("loading"))
     todolistApi.createTodo(title)
         .then(res => {
             dispatch(CreateTodo(res.data.data.item))
+            dispatch(setAppStatus("succeeded"))
         })
 }
 
 export const changeTodoTitleTC = (todoId: string, title: string) => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatus("loading"))
     todolistApi.updateTodo(todoId, title)
         .then(res => {
-            dispatch(UpdateTodoTitle(todoId, title))
+            if (res.data.resultCode === 0) {
+                dispatch(UpdateTodoTitle(todoId, title))
+                dispatch(setAppStatus("succeeded"))
+            } else {
+                handleServerAppError(res.data, dispatch)
+            }
+        })
+        .catch(rej => {
+            handleServerNetworkError(rej, dispatch);
         })
 }
 
@@ -105,6 +124,7 @@ type ActionsType =
     | ReturnType<typeof UpdateTodoTitle>
     | ReturnType<typeof UpdateTodoFilter>
     | ReturnType<typeof UpdateTodoEntityStatusAC>
+    |ActionsAppType
 
 
 export type TodolistDomainType = TodolistType & {
@@ -115,4 +135,4 @@ export type TodolistDomainType = TodolistType & {
 export type FilterValuesType = "all" | "active" | "completed";
 export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed";
 
-type ThunkDispatch = Dispatch<ActionsType | any>
+type ThunkDispatch = Dispatch<ActionsType>

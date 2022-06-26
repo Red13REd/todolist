@@ -1,5 +1,4 @@
 import axios, {AxiosResponse} from "axios"
-import {UpdateDomainTaskModelType} from "../features/TodolistsList/task-reducer";
 
 const instance = axios.create({
     baseURL: "https://social-network.samuraijs.com/api/1.1/",
@@ -28,7 +27,7 @@ export const todolistApi = {
     createTask(todoId: string, title: string) {
         return instance.post<{ title: string }, AxiosResponse<ResponseType<{ item: TaskType }>>>(`todo-lists/${todoId}/tasks`, {title});
     },
-    updateTask(todoId: string, taskId: string, model: UpdateDomainTaskModelType) {
+    updateTask(todoId: string, taskId: string, model: UpdateTaskModelType) {
         return instance.put<{ title: string }, AxiosResponse<ResponseType<{ item: TaskType }>>>(`todo-lists/${todoId}/tasks/${taskId}`, model)
     },
     deleteTask(todoId: string, taskId: string) {
@@ -57,7 +56,7 @@ export type TodolistType = {
     title: string
 }
 
-type ResponseType<T = {}> = {
+export type ResponseType<T = {}> = {
     data: T
     resultCode: number
     messages: string[]
@@ -99,7 +98,7 @@ export type TaskType = {
 }
 
 
-type UpdateTaskModelType = {
+export type UpdateTaskModelType = {
     title: string
     description: string
     status: TaskStatuses
@@ -108,7 +107,7 @@ type UpdateTaskModelType = {
     deadline: string
 }
 
-type LoginParamsType = {
+export type LoginParamsType = {
     email: string
     password: string
     rememberMe?: boolean

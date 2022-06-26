@@ -1,18 +1,19 @@
 import {Checkbox, IconButton} from "@material-ui/core";
 import {Delete} from "@material-ui/icons";
-import React, {ChangeEvent} from "react";
-import {TaskStatuses, TaskType} from "../../../../api/todolist-api";
+import React, {ChangeEvent, useCallback} from "react";
+import {TaskStatuses} from "../../../../api/todolist-api";
 import {EditableSpan} from "../../../../Components/EditableSpan/EditableSpan";
+import {TaskStateDomainType} from "../../tasks-reducer";
 
 type TaskPropsType = {
-    task: TaskType
+    task: TaskStateDomainType
     todoId: string
     removeTask: (todoId: string, taskId: string) => void
     changeTaskTitle: (todoId: string, taskId: string, title: string) => void
     changeTaskStatus: (todoId: string, taskId: string, status: TaskStatuses) => void
 }
 
-export const Task: React.FC<TaskPropsType> = (props) => {
+export const Task = React.memo((props: TaskPropsType) => {
 
     const {
         task,
@@ -22,17 +23,17 @@ export const Task: React.FC<TaskPropsType> = (props) => {
         changeTaskTitle,
     } = props
 
-    const onRemoveTaskHandler = () => {
+    const onRemoveTaskHandler = useCallback(() => {
         removeTask(todoId, task.id)
-    }
+    }, [removeTask, todoId, task.id])
 
-    const onTitleChangeHandler = (title: string) => {
+    const onTitleChangeHandler = useCallback((title: string) => {
         changeTaskTitle(todoId, task.id, title)
-    }
+    }, [changeTaskTitle, todoId, task.id])
 
-    const onCheckedChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const onCheckedChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         changeTaskStatus(todoId, task.id, e.currentTarget.checked ? TaskStatuses.Completed : TaskStatuses.New)
-    }
+    }, [changeTaskStatus, todoId, task.id])
 
     return (
         <div key={task.id} className={task.status === TaskStatuses.Completed ? "is-done" : ""}>
@@ -42,9 +43,9 @@ export const Task: React.FC<TaskPropsType> = (props) => {
                 onChange={onCheckedChangeHandler}
             />
             <EditableSpan callBack={onTitleChangeHandler} title={task.title}/>
-            <IconButton onClick={onRemoveTaskHandler}>
+            <IconButton onClick={onRemoveTaskHandler} disabled={task.entityStatus === "loading"}>
                 <Delete/>
             </IconButton>
         </div>
     );
-};
+})
