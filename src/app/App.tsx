@@ -13,17 +13,20 @@ import {
 } from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
 import {Navigate, Route, Routes} from "react-router-dom";
-import {Login} from "../features/Login/Login";
 import {useAppDispatch, useCustomSelector} from "./store";
 import {inInitializedApp, RequestStatusType} from "./app-reducer";
 import {logoutTc} from "./auth-reducer";
 import {ErrorSnackbar} from "../Components/ErrorSnackbar/ErrorSnackbar";
+import {Login} from "../features/Login/Login";
 
+type AppType = {
+    demo?: boolean
+}
 
-function App() {
+export const App: React.FC<AppType> = ({demo = false}) => {
 
     const status = useCustomSelector<RequestStatusType>(state => state.app.status)
-    const isInInitialized = useCustomSelector< boolean>(state => state.app.inInitialized)
+    const isInInitialized = useCustomSelector<boolean>(state => state.app.inInitialized)
     const isLoggedIn = useCustomSelector(state => state.auth.isLoggedIn)
     const dispatch = useAppDispatch()
 
@@ -35,7 +38,6 @@ function App() {
     const onClickHandlerLogout = () => {
         dispatch(logoutTc())
     }
-
     if (!isInInitialized) {
         return <div
             style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
@@ -65,12 +67,12 @@ function App() {
             </AppBar>
             <Container fixed>
                 <Routes>
-                    <Route path="/" element={<TodolistsList/>}/>
+                    <Route path="/" element={<TodolistsList demo={demo}/>}/>
                     <Route path="login" element={<Login/>}/>
                     <Route path="/404" element={<div>
                         <h1>404: PAGE NOT FOUND</h1>
-                        <button onClick={() => {
-                        }}>Back home
+                        <button onClick={() => <Navigate to="/"/>
+                        }>Back home
                         </button>
                     </div>}/>
                     <Route path="*" element={<Navigate to="/404"/>}/>
@@ -80,4 +82,3 @@ function App() {
     );
 }
 
-export default App;

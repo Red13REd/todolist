@@ -17,14 +17,18 @@ import {Navigate} from "react-router-dom";
 import {useAppDispatch, useCustomSelector} from "../../app/store";
 
 
-export const TodolistsList = () => {
+type  PropsType = {
+    demo?: boolean
+}
+
+export const TodolistsList: React.FC<PropsType> = ({demo = false}) => {
     const todo = useCustomSelector< Array<TodolistDomainType>>(state => state.todo)
     const tasks = useCustomSelector< TaskStateType>(state => state.task)
     const isLoggedIn = useCustomSelector(state => state.auth.isLoggedIn)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        if (!isLoggedIn) {
+        if (demo || !isLoggedIn) {
             return
         }
         dispatch(fetchTodo())
@@ -88,6 +92,7 @@ export const TodolistsList = () => {
                                     changeTaskTitle={changeTaskTitle}
                                     addTask={addTask}
                                     removeTask={removeTask}
+                                    demo={demo}
                                 />
                             </Paper>
                         </Grid>

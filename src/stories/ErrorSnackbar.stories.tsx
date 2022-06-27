@@ -8,11 +8,12 @@ export default {
     decorators: [storybookProviderDecorator],
 } as ComponentMeta<typeof ErrorSnackbar>;
 
-const Template: ComponentStory<typeof ErrorSnackbar> = (args) => <ErrorSnackbar/>
+const Template: ComponentStory<typeof ErrorSnackbar> = (args) => <ErrorSnackbar {...args}/>
 
 export const ErrorSnackbarExample = Template.bind({})
 
 ErrorSnackbarExample.args = {
+    demo: true
 }
 
 

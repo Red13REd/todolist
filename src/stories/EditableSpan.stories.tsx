@@ -20,7 +20,7 @@ const Template: ComponentStory<typeof EditableSpan> = (args) => <EditableSpan {.
 export const EditableSpanExample = Template.bind({})
 
 EditableSpanExample.args = {
-    title: "string",
+    title: "Double click",
     callBack: action("Title changed")
 }
 

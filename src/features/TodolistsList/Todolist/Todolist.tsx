@@ -19,9 +19,10 @@ type TodolistType = {
     changeTaskTitle: (todoId: string, taskId: string, title: string) => void
     addTask: (todoId: string, title: string) => void
     removeTask: (todoId: string, taskId: string) => void
+    demo?: boolean
 }
 
-export const Todolist = React.memo((props: TodolistType) => {
+export const Todolist = React.memo(({demo = false, ...props}: TodolistType) => {
 
     const {
         tasks,
@@ -38,6 +39,9 @@ export const Todolist = React.memo((props: TodolistType) => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
+        if (demo) {
+            return
+        }
         dispatch(fetchTask(todo.id))
     }, [])
 
